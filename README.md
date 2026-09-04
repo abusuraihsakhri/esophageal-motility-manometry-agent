@@ -1,7 +1,7 @@
 # Esophageal Motility Manometry Agent
 
-> **Domain:** Digital Pathology & Quantitative Histopathology  
-> **Reference Guidelines & Standards:** `College of American Pathologists (CAP) Synoptic Protocols & DICOM WSI`
+> **Domain:** Gastroenterology & Hepatology Systems
+> **Standard:** AASLD / ACG / Chicago Classification v4.0
 
 <div align="center">
 
@@ -18,24 +18,53 @@
 
 ## 📖 What It Does
 
-**Esophageal Motility Manometry Agent** is an advanced analytical and computational platform implementing Chicago Classification v4.0 High-Resolution Manometry Agent.
+**Esophageal Motility Manometry Agent** is an advanced analytical platform implementing Chicago Classification v4.0 High-Resolution Manometry analysis. It analyzes integrated relaxation pressure (IRP), distal contractile integral (DCI), and classifies esophageal motility disorders including Achalasia (Types I-III), Jackhammer esophagus, and Ineffective Esophageal Motility (IEM).
 
 ---
 
 ## ⚙️ Key Capabilities & Algorithmic Modules
 
-### 🔬 Core Algorithmic & Evaluation Engines
+### 🔬 Core Evaluation Engines
 
-- **`Severity`** — dedicated module for severity evaluation and state verification.
-- **`DomainKnowledgeRegistry`**: Enterprise domain rules, guideline matrices, and evidence benchmarks.
-- **`AgentAlert`** — dedicated module for agent alert evaluation and state verification.
-- **`IRPRelaxationEvaluatorAgent`**: Specialized Sub-Agent 1 for esophageal-motility-manometry-agent
-- **`ContractileWaveAnalyzerAgent`**: Specialized Sub-Agent 2 for esophageal-motility-manometry-agent
-- **`ChicagoV4ClassifierAgent`**: Specialized Sub-Agent 3 for esophageal-motility-manometry-agent
+- **`IRPRelaxationEvaluatorAgent`** — Evaluates integrated relaxation pressure against clinical baselines
+- **`ContractileWaveAnalyzerAgent`** — Analyzes contractile wave patterns and STAT escalation triggers
+- **`ChicagoV4ClassifierAgent`** — Classifies phenotypic discordance per Chicago Classification v4.0
+- **`ManometryCoordinator`** — Executive coordinator orchestrating multi-agent consensus
+
+### 🛡️ Enterprise Security
+
+- **Zero-PHI Outbound Guard** — AST and regex inspection blocking SSNs, MRNs, phone numbers, emails, DOBs, and patient identifiers
+- **HMAC-SHA256 Audit Trail** — Chained, cryptographically signed logs for every evaluation and state transition
+- **Input Validation** — Sanitization and bounds checking on all inputs
+
+### 🔌 Integration & Telemetry
+
+- **LLM Reasoning Adapter** — Agnostic integration for local Ollama instances, Claude, GPT-4o, and deterministic test mocks
+- **FastAPI REST API** — OpenAPI 3.1 REST endpoints for programmatic access
+- **Prometheus Metrics** — Operational telemetry exporter (`/metrics`)
 
 ---
 
-## 💻 CLI Quickstart & Usage
+## 💻 Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/abusuraihsakhri/esophageal-motility-manometry-agent.git
+cd esophageal-motility-manometry-agent
+
+# Install dependencies
+pip install fastapi uvicorn pydantic pytest
+```
+
+### Environment Variables
+
+| Variable | Description | Default |
+|:---------|:------------|:--------|
+| `AUDIT_SECRET_KEY` | Secret key for HMAC-SHA256 audit trail signing | Random ephemeral key (set for production) |
+
+---
+
+## 🚀 Usage
 
 ### 1. Guided Interactive Mode
 ```bash
@@ -44,45 +73,53 @@ python cli.py
 
 ### 2. Direct Parameterized Evaluation
 ```bash
-python cli.py --task-id <value> --target <value> --primary <value> --secondary <value>
+python cli.py audit --task-id TASK-001 --target KEY-01 --primary 28.5 --secondary 14.2
+```
+
+### 3. Batch CSV Processing
+```bash
+python cli.py batch -i input.csv -o results.csv
+```
+
+### 4. Query the Supervisory Chat
+```bash
+python cli.py chat "What is the system status?"
+```
+
+### 5. Verify Audit Trail Integrity
+```bash
+python cli.py verify-audit
+```
+
+### 6. Launch REST API Server
+```bash
+python cli.py serve --host 127.0.0.1 --port 8000
 ```
 
 ### Parameter Reference
-- `--task-id`: Specifies input measurement or parameter value.
-- `--target`: Specifies input measurement or parameter value.
-- `--primary`: Specifies input measurement or parameter value.
-- `--secondary`: Specifies input measurement or parameter value.
-- `--critical`: Specifies input measurement or parameter value.
-- `--status`: Specifies input measurement or parameter value.
-- `--input`: Specifies input measurement or parameter value.
-- `--output`: Specifies input measurement or parameter value.
+- `--task-id`: Unique task/case identifier
+- `--target`: Target entity or specimen key
+- `--primary`: Primary metric measurement (float)
+- `--secondary`: Secondary metric measurement (float)
+- `--critical`: Flag for critical/emergency escalation
+- `--status`: Status descriptor (e.g., NOMINAL, DISCORDANT)
 
-### Input Data Schema
+### Input Data Schema (CSV Batch)
 
 | Field | Description | Requirement |
 |:------|:------------|:------------|
-| `case_id` | Parameter / observation metric | Required |
-| `patient_synthetic_id` | Parameter / observation metric | Required |
-| `metric_primary` | Parameter / observation metric | Required |
-| `metric_secondary` | Parameter / observation metric | Required |
-| `is_stat` | Parameter / observation metric | Required |
-| `status_flag` | Parameter / observation metric | Required |
-
----
-
-## 🛡️ Security & Enterprise Architecture
-
-* **Zero-PHI Outbound Interceptor:** Active AST and regex inspection blocking SSNs, MRNs, phone numbers, and patient identifiers.
-* **Tamper-Evident HMAC-SHA256 Audit Trail:** Chained, cryptographically signed logs for every evaluation and state transition.
-* **Air-Gapped LLM Reasoning Adapter:** Agnostic integration for local Ollama instances (`llama3`, `mistral`), Claude 3.5 Sonnet, GPT-4o, and deterministic test mocks.
-* **Active Learning Bayesian Calibration:** Dynamic tracker updating worker reliability weights and monitoring Brier calibration drift.
-* **FastAPI & Prometheus Telemetry:** Exposes OpenAPI 3.1 REST endpoints and operational Prometheus metrics (`/metrics`).
+| `task_id` | Unique task identifier | Required |
+| `target_identifier` | Target entity key | Required |
+| `primary_metric` | Primary measurement value | Required |
+| `secondary_metric` | Secondary measurement value | Optional (default: 0.0) |
+| `status_descriptor` | Status code or phenotype | Optional (default: NOMINAL) |
+| `is_critical_flag` | Emergency escalation flag | Optional (default: false) |
 
 ---
 
 ## 🧪 Testing & Verification
 
-Run the automated test suite:
+Run the complete test suite:
 
 ```bash
 pytest -v
@@ -91,7 +128,7 @@ pytest -v
 Execute high-throughput batch simulation benchmarks:
 
 ```bash
-python simulator.py --tasks 1000 --concurrency 8
+python simulator.py 1000
 ```
 
 ---
@@ -100,5 +137,46 @@ python simulator.py --tasks 1000 --concurrency 8
 
 ```bash
 docker build -t esophageal-motility-manometry-agent .
-docker run -p 8000:8000 esophageal-motility-manometry-agent
+docker run -p 8000:8000 -e AUDIT_SECRET_KEY=your-secret-key esophageal-motility-manometry-agent
 ```
+
+---
+
+## 📁 Project Structure
+
+```
+esophageal-motility-manometry-agent/
+├── agents/                          # Enterprise agent package
+│   ├── api.py                       # FastAPI REST server
+│   ├── base.py                      # Security, PHI guard, audit trail
+│   ├── learning.py                  # Bayesian calibration engine
+│   ├── llm_factory.py               # LLM provider factory
+│   ├── metrics.py                   # Prometheus metrics collector
+│   ├── models.py                    # Pydantic data models
+│   ├── streamer.py                  # WebSocket telemetry broadcaster
+│   ├── supervisor.py                # Master orchestrator
+│   └── workers.py                   # Specialized domain workers
+├── esophageal_motility_manometry_agent/  # Clinical package
+│   ├── agents.py                    # Clinical sub-agents
+│   ├── cli.py                       # Clinical CLI
+│   ├── engine.py                    # Clinical algorithmic engine
+│   ├── models.py                    # Clinical data models
+│   └── server.py                    # Clinical FastAPI server
+├── tests/                           # Test suite
+│   ├── test_enrichment.py           # Enrichment module tests
+│   ├── test_esophageal_motility_manometry_agent.py  # Core tests
+│   └── test_security_and_reliability.py  # Security & reliability tests
+├── cli.py                           # Main CLI entry point
+├── manometry_mind.py                # Standalone manometry module
+├── enrichment.py                    # Enrichment feature engines
+├── simulator.py                     # High-throughput stress tester
+├── pyproject.toml                   # Project configuration
+├── Dockerfile                       # Container definition
+└── docker-compose.yml               # Multi-service orchestration
+```
+
+---
+
+## 📄 License
+
+MIT License. See [LICENSE](LICENSE) for details.

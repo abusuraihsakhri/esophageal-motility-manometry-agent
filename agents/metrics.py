@@ -1,8 +1,7 @@
 """
 Prometheus Operational Metrics Exporter for esophageal-motility-manometry-agent.
 """
-import time
-from typing import Dict, Any
+from typing import Any
 
 class SystemMetricsCollector:
     def __init__(self):

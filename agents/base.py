@@ -8,6 +8,7 @@ import json
 import time
 import hmac
 import hashlib
+import secrets
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
@@ -28,17 +29,12 @@ class SecurityException(Exception):
     pass
 
 
-class ResourceLimitExceededException(Exception):
-    """Raised when computational parameters exceed safety bounds."""
-    pass
-
-
 def assert_no_phi(text: str) -> None:
     if not text:
         return
     for pattern in PHI_PATTERNS:
         if pattern.search(str(text)):
-            raise SecurityException(f"PHI Outbound Guard Violation: Sensitive identifier detected with pattern {pattern.pattern}")
+            raise SecurityException("PHI Outbound Guard Violation: Sensitive identifier detected in outbound content")
 
 
 class PHIGuard:
@@ -57,7 +53,17 @@ class PHIGuard:
 class AuditTrail:
     """Cryptographic Tamper-Evident HMAC-SHA256 Audit Trail."""
     def __init__(self, secret_key: Optional[str] = None):
-        self.secret_key = (secret_key or os.getenv("AUDIT_SECRET_KEY", "esophageal-motility-manometry-agent-master-audit-key-2026")).encode("utf-8")
+        resolved_key = secret_key or os.getenv("AUDIT_SECRET_KEY")
+        if not resolved_key:
+            resolved_key = secrets.token_hex(32)
+            import warnings
+            warnings.warn(
+                "AUDIT_SECRET_KEY not set; using an ephemeral random key. "
+                "Set AUDIT_SECRET_KEY as an environment variable for persistent audit integrity.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        self.secret_key = resolved_key.encode("utf-8") if isinstance(resolved_key, str) else resolved_key
         self.logs: List[Dict[str, Any]] = []
 
     def log(self, actor: str, actor_tier: str, event_type: str, details: Dict[str, Any]) -> Dict[str, Any]:
@@ -108,11 +114,3 @@ class AuditLogger:
     @staticmethod
     def verify_integrity() -> bool:
         return GLOBAL_AUDIT.verify_integrity()
-
-
-class ActionExecutor:
-    @staticmethod
-    def execute_with_audit(actor: str, actor_tier: str, action_type: str, fn, *args, **kwargs):
-        res = fn(*args, **kwargs)
-        AuditLogger.log(actor, actor_tier, action_type, {"status": "SUCCESS"})
-        return res

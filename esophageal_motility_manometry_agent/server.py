@@ -1,8 +1,7 @@
 """
 FastAPI REST Application & Webhooks for ManometryMind: Chicago Classification v4.0 High-Resolution Esophageal Motility Agent.
 """
-from typing import Dict, Any, Optional
-from .models import ClinicalCasePayload
+from typing import Dict, Any
 from .agents import ManometryCoordinator
 
 coordinator = ManometryCoordinator()

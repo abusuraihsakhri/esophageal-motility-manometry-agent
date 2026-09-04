@@ -6,7 +6,7 @@ Standard: ACG / AGA Clinical Guidelines & Chicago v4.0
 import datetime
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Dict, Any
 
 
 class UrgencyLevel(str, Enum):

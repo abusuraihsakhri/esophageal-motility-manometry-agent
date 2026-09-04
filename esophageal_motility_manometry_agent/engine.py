@@ -3,9 +3,8 @@ Clinical Algorithmic Engine & Guideline Rules for ManometryMind: Chicago Classif
 Domain: Gastroenterology
 Standard: ACG / AGA Clinical Guidelines & Chicago v4.0
 """
-import math
-from typing import Dict, Any, List, Optional
-from .models import ClinicalCasePayload, AgentAlert, UrgencyLevel, ClinicalIntegrityStatus
+from typing import Dict, Any, Optional
+from .models import UrgencyLevel
 
 
 class ClinicalDomainEngine:
