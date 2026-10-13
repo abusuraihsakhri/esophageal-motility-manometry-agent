@@ -14,7 +14,7 @@ def create_app():
 
         app = FastAPI(
             title="ManometryMind: Chicago Classification v4.0 High-Resolution Esophageal Motility Agent",
-            description="Analyzes integrated relaxation pressure (IRP), distal contractile integral (DCI), and classifies Achalasia (Types I-III) vs Jackhammer vs Ineffective Motility.",
+            description="Generic threshold and descriptor demonstration; not a validated CCv4.0 classifier.",
             version="2.0.0-PRO",
         )
 
