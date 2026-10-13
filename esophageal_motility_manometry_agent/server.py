@@ -3,13 +3,14 @@ FastAPI REST Application & Webhooks for ManometryMind: Chicago Classification v4
 """
 from typing import Dict, Any
 from .agents import ManometryCoordinator
+from .models import ClinicalCasePayload
 
 coordinator = ManometryCoordinator()
 
 def create_app():
     try:
         from fastapi import FastAPI
-        from pydantic import BaseModel
+        from pydantic import BaseModel, Field
 
         app = FastAPI(
             title="ManometryMind: Chicago Classification v4.0 High-Resolution Esophageal Motility Agent",
@@ -25,7 +26,7 @@ def create_app():
             status_flag: str = "DISCORDANT"
             is_stat: bool = True
             clinical_notes: str = ""
-            biomarkers: Dict[str, Any] = {}
+            biomarkers: Dict[str, Any] = Field(default_factory=dict)
 
         class ChatRequest(BaseModel):
             query: str
