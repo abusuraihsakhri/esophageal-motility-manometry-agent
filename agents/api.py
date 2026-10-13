@@ -3,7 +3,7 @@ FastAPI REST API Server for Esophageal Motility Manometry Agent.
 """
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from .base import AuditLogger, PHIGuard
+from .base import AuditLogger, PHIGuard, SecurityException
 from .models import SystemTaskPayload
 from .supervisor import SystemSupervisor
 
@@ -11,7 +11,7 @@ supervisor = SystemSupervisor(model_provider="mock")
 
 app = FastAPI(
     title="Esophageal Motility Manometry Agent API",
-    description="Enterprise Distributed Component Platform (Gastroenterology & Hepatology Systems)",
+    description="Generic rule demonstration, not a validated esophageal motility classifier",
     version="3.0.0-ENTERPRISE",
 )
 
@@ -22,7 +22,7 @@ class ChatRequest(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"status": "HEALTHY", "service": "esophageal-motility-manometry-agent", "domain": "Gastroenterology & Hepatology Systems", "standard": "AASLD / ACG / Chicago Classification v4.0", "version": "3.0.0-ENTERPRISE"}
+    return {"status": "HEALTHY", "service": "esophageal-motility-manometry-agent", "domain": "Gastroenterology & Hepatology Systems", "standard": "Unvalidated demonstration rules", "version": "3.0.0-ENTERPRISE"}
 
 
 @app.get("/metrics")
@@ -30,13 +30,16 @@ def metrics():
     return {
         "dossiers_processed_total": len(supervisor.dossier_registry),
         "audit_blocks_total": len(AuditLogger.get_trail()),
-        "system_status": "NOMINAL_OPTIMAL"
+        "system_status": "DEMONSTRATION"
     }
 
 
 @app.post("/api/audit")
 def api_audit(payload: SystemTaskPayload):
-    dossier = supervisor.process_task(payload)
+    try:
+        dossier = supervisor.process_task(payload)
+    except SecurityException:
+        raise HTTPException(status_code=422, detail="A prohibited identifier was detected in the payload")
     return dossier.to_dict()
 
 

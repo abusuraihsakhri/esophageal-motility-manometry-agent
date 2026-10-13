@@ -1,182 +1,83 @@
 # Esophageal Motility Manometry Agent
 
-> **Domain:** Gastroenterology & Hepatology Systems
-> **Standard:** AASLD / ACG / Chicago Classification v4.0
+A Python CLI and FastAPI service for evaluating **generic demonstration rules** over two numeric inputs, an optional critical flag, and a descriptor. A standalone browser demo shows the same three rule triggers without requiring a server.
 
-<div align="center">
+**Clinical limitation:** This repository is **not** a validated implementation of Chicago Classification v4.0 (CCv4.0). Its existing thresholds (primary metric >25, secondary metric >12) are illustrative, are not labeled with clinically meaningful units, and cannot classify achalasia, esophagogastric junction outflow obstruction, spasm, hypercontractile esophagus, or ineffective esophageal motility. Results must not be used for diagnosis, management, or patient triage.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB.svg?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688.svg?logo=fastapi&logoColor=white)
-![Audit Trail](https://img.shields.io/badge/Audit-HMAC--SHA256_Tamper--Evident-brightgreen.svg)
-![Zero-PHI Guard](https://img.shields.io/badge/Guard-Zero--PHI_Outbound-blue.svg)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)
+CCv4.0 requires device- and position-specific IRP thresholds, swallow-level contractility and pressurization analysis, an appropriate HRM protocol, clinical context, and sometimes supportive testing. See [Yadlapati et al., *Neurogastroenterology & Motility* (2021)](https://pmc.ncbi.nlm.nih.gov/articles/PMC8034247/).
 
-</div>
+## Browser demonstration
 
----
-
-## 📖 What It Does
-
-**Esophageal Motility Manometry Agent** is an advanced analytical platform implementing Chicago Classification v4.0 High-Resolution Manometry analysis. It analyzes integrated relaxation pressure (IRP), distal contractile integral (DCI), and classifies esophageal motility disorders including Achalasia (Types I-III), Jackhammer esophagus, and Ineffective Esophageal Motility (IEM).
-
----
-
-## ⚙️ Key Capabilities & Algorithmic Modules
-
-### 🔬 Core Evaluation Engines
-
-- **`IRPRelaxationEvaluatorAgent`** — Evaluates integrated relaxation pressure against clinical baselines
-- **`ContractileWaveAnalyzerAgent`** — Analyzes contractile wave patterns and STAT escalation triggers
-- **`ChicagoV4ClassifierAgent`** — Classifies phenotypic discordance per Chicago Classification v4.0
-- **`ManometryCoordinator`** — Executive coordinator orchestrating multi-agent consensus
-
-### 🛡️ Enterprise Security
-
-- **Zero-PHI Outbound Guard** — AST and regex inspection blocking SSNs, MRNs, phone numbers, emails, DOBs, and patient identifiers
-- **HMAC-SHA256 Audit Trail** — Chained, cryptographically signed logs for every evaluation and state transition
-- **Input Validation** — Sanitization and bounds checking on all inputs
-
-### 🔌 Integration & Telemetry
-
-- **LLM Reasoning Adapter** — Agnostic integration for local Ollama instances, Claude, GPT-4o, and deterministic test mocks
-- **FastAPI REST API** — OpenAPI 3.1 REST endpoints for programmatic access
-- **Prometheus Metrics** — Operational telemetry exporter (`/metrics`)
-
----
-
-## 💻 Installation
+The repository contains a static [browser application](index.html) with synthetic examples, three rule checks, a JSON result, and an export action. Open `index.html` directly in a modern browser, or serve the repository locally:
 
 ```bash
-# Clone the repository
+python -m http.server 8080
+# Open http://localhost:8080/
+```
+
+The browser demo runs entirely in JavaScript: **no Python, API, or Pyodide is loaded**. It performs no cryptographic audit signing and does not transmit, store, or log entries to a server. Inputs remain in the tab; exported files are saved only by explicit user action. Use synthetic, non-identifying data only.
+
+## Python installation and usage
+
+Requires Python 3.9 or newer (CI tests Python 3.10–3.12).
+
+```bash
 git clone https://github.com/abusuraihsakhri/esophageal-motility-manometry-agent.git
 cd esophageal-motility-manometry-agent
+python -m pip install -e ".[api,test]"
 
-# Install dependencies
-pip install fastapi uvicorn pydantic pytest
-```
-
-### Environment Variables
-
-| Variable | Description | Default |
-|:---------|:------------|:--------|
-| `AUDIT_SECRET_KEY` | Secret key for HMAC-SHA256 audit trail signing | Random ephemeral key (set for production) |
-
----
-
-## 🚀 Usage
-
-### 1. Guided Interactive Mode
-```bash
-python cli.py
-```
-
-### 2. Direct Parameterized Evaluation
-```bash
-python cli.py audit --task-id TASK-001 --target KEY-01 --primary 28.5 --secondary 14.2
-```
-
-### 3. Batch CSV Processing
-```bash
+python cli.py audit --task-id SYN-001 --target KEY-001 --primary 28.5 --secondary 14.2
 python cli.py batch -i input.csv -o results.csv
-```
-
-### 4. Query the Supervisory Chat
-```bash
 python cli.py chat "What is the system status?"
-```
-
-### 5. Verify Audit Trail Integrity
-```bash
 python cli.py verify-audit
-```
-
-### 6. Launch REST API Server
-```bash
 python cli.py serve --host 127.0.0.1 --port 8000
 ```
 
-### Parameter Reference
-- `--task-id`: Unique task/case identifier
-- `--target`: Target entity or specimen key
-- `--primary`: Primary metric measurement (float)
-- `--secondary`: Secondary metric measurement (float)
-- `--critical`: Flag for critical/emergency escalation
-- `--status`: Status descriptor (e.g., NOMINAL, DISCORDANT)
+The package also includes the historical `manometry_mind.py` entry point and the `esophageal_motility_manometry_agent` package. They use different demonstration schemas and thresholds; they are retained for compatibility, not interchangeable clinical classifications.
 
-### Input Data Schema (CSV Batch)
+### CSV batch format
 
-| Field | Description | Requirement |
-|:------|:------------|:------------|
-| `task_id` | Unique task identifier | Required |
-| `target_identifier` | Target entity key | Required |
-| `primary_metric` | Primary measurement value | Required |
-| `secondary_metric` | Secondary measurement value | Optional (default: 0.0) |
-| `status_descriptor` | Status code or phenotype | Optional (default: NOMINAL) |
-| `is_critical_flag` | Emergency escalation flag | Optional (default: false) |
+```csv
+task_id,target_identifier,primary_metric,secondary_metric,status_descriptor,is_critical_flag
+SYN-001,KEY-001,28.5,14.2,DISCORDANT,true
+SYN-002,KEY-002,10.0,3.2,NOMINAL,false
+```
 
----
+Output adds `overall_urgency`, `integrity_status`, `total_alerts`, and `audit_hash`. Malformed numeric records are marked `ERROR` without stopping the batch. For realistic patient datasets, additional privacy and safety engineering is required.
 
-## 🧪 Testing & Verification
+### REST API
 
-Run the complete test suite:
+Start with `python cli.py serve` and visit `http://127.0.0.1:8000/docs`. Routes are `GET /health`, `GET /metrics` (JSON counters), `POST /api/audit`, `POST /api/chat` (deterministic mock response), and `GET /api/audit/logs`. The endpoint accepts the same generic rule fields as the CLI.
+
+No actual external LLM provider is contacted: the current `LLMFactory` returns a deterministic mock for every configured provider name.
+
+## Security and privacy scope
+
+The Python service has a pattern-based identifier guard and a chained HMAC-SHA256 audit ledger. These are **defense-in-depth demonstrations**, not certified PHI detection, comprehensive de-identification, HIPAA compliance, or secure clinical audit infrastructure. Direct identifiers outside the known patterns can be missed.
+
+Audit entries and their secret key are held in process memory; logs do **not** persist across restarts. Verification detects changes to signed entries while they remain in memory. Configure `AUDIT_SECRET_KEY` via a deployment secret, not source code. The application's endpoint has no authentication or authorization; do not expose it publicly or submit real patient data.
+
+For Docker Compose:
 
 ```bash
-pytest -v
+export AUDIT_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+docker compose up --build
 ```
 
-Execute high-throughput batch simulation benchmarks:
+## Testing
 
 ```bash
-python simulator.py 1000
+python -m pytest -v
+node --check web/app.js
+node web/test.js
 ```
 
----
+GitHub Actions installs the Python package and runs the Python test suite and Node browser-rule tests on each pull request and push to `master`. The browser has not been subjected to clinical validation or a real patient workflow.
 
-## 🐳 Container Deployment
+## Technology and compatibility
 
-```bash
-docker build -t esophageal-motility-manometry-agent .
-docker run -p 8000:8000 -e AUDIT_SECRET_KEY=your-secret-key esophageal-motility-manometry-agent
-```
+Python 3.9+, Pydantic v2, FastAPI/Uvicorn (optional API), pytest, and dependency-free browser JavaScript/HTML/CSS. The web demo uses standard modern browser capabilities (ES2017+, Blob downloads). No server-side Python can execute on GitHub Pages; the static demo is intentionally written in JavaScript.
 
----
+## License
 
-## 📁 Project Structure
-
-```
-esophageal-motility-manometry-agent/
-├── agents/                          # Enterprise agent package
-│   ├── api.py                       # FastAPI REST server
-│   ├── base.py                      # Security, PHI guard, audit trail
-│   ├── learning.py                  # Bayesian calibration engine
-│   ├── llm_factory.py               # LLM provider factory
-│   ├── metrics.py                   # Prometheus metrics collector
-│   ├── models.py                    # Pydantic data models
-│   ├── streamer.py                  # WebSocket telemetry broadcaster
-│   ├── supervisor.py                # Master orchestrator
-│   └── workers.py                   # Specialized domain workers
-├── esophageal_motility_manometry_agent/  # Clinical package
-│   ├── agents.py                    # Clinical sub-agents
-│   ├── cli.py                       # Clinical CLI
-│   ├── engine.py                    # Clinical algorithmic engine
-│   ├── models.py                    # Clinical data models
-│   └── server.py                    # Clinical FastAPI server
-├── tests/                           # Test suite
-│   ├── test_enrichment.py           # Enrichment module tests
-│   ├── test_esophageal_motility_manometry_agent.py  # Core tests
-│   └── test_security_and_reliability.py  # Security & reliability tests
-├── cli.py                           # Main CLI entry point
-├── manometry_mind.py                # Standalone manometry module
-├── enrichment.py                    # Enrichment feature engines
-├── simulator.py                     # High-throughput stress tester
-├── pyproject.toml                   # Project configuration
-├── Dockerfile                       # Container definition
-└── docker-compose.yml               # Multi-service orchestration
-```
-
----
-
-## 📄 License
-
-MIT License. See [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](LICENSE).

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Esophageal Motility — Offline Rule Demonstration</title>
+  <style>
+    :root {color-scheme:dark;--bg:#0a1220;--surface:#142034;--stroke:#354357;--text:#eff5fc;--muted:#b7c6d6;--accent:#8fc7ff;}
+    * {box-sizing:border-box}
+    body {background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0}
+    main {width:min(1100px,calc(100% - 32px));margin:2.4rem auto}
+    h1 {font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.2;margin:0 0 .4rem}
+    h2 {font-size:1.1rem;margin:0 0 1rem}
+    p {margin:.3rem 0 1rem}
+    .muted {color:var(--muted)}
+    .notice {border-left:4px solid var(--accent);padding:.7rem 1rem;background:#182b41;margin:1.5rem 0}
+    .layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:1rem}
+    .panel {background:var(--surface);border:1px solid var(--stroke);border-radius:12px;padding:1.3rem;min-width:0}
+    label {display:block;margin:0 0 .3rem;color:var(--muted);font-size:.9rem}
+    .field {margin:0 0 .85rem}
+    input:not([type="checkbox"]) {background:#0b1728;border:1px solid #66778e;color:var(--text);border-radius:7px;padding:.7rem;width:100%;font:inherit}
+    input:focus-visible,button:focus-visible,a:focus-visible {outline:3px solid var(--accent);outline-offset:2px}
+    .inline {display:flex;gap:.6rem;align-items:center;margin:1rem 0}
+    .inline label {margin:0}
+    input[type="checkbox"] {width:1.15rem;height:1.15rem}
+    button {border:1px solid var(--accent);border-radius:7px;padding:.7rem 1rem;font:inherit;font-weight:650;cursor:pointer;background:var(--accent);color:#06162b}
+    button.secondary {background:transparent;color:var(--accent)}
+    button:disabled {opacity:.45;cursor:not-allowed}
+    .actions {display:flex;gap:.65rem;flex-wrap:wrap}
+    #error {color:#ffb3b3;min-height:1.6em}
+    pre {background:#091321;border:1px solid var(--stroke);padding:1rem;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:480px;overflow-y:auto;min-height:200px;font-size:.85rem}
+    a {color:var(--accent)}
+    footer {padding-top:1rem;font-size:.9rem}
+    @media(max-width:750px) {.layout {grid-template-columns:1fr} main{margin:1.25rem auto}}
+  </style>
+  <script src="./web/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Esophageal Motility Manometry</h1>
+      <p class="muted">Offline rule demonstration · no account, API, or installation required</p>
+    </header>
+    <aside class="notice" aria-label="Clinical limitations">
+      <strong>Not a clinical classifier.</strong> The existing repository's three generic threshold/keyword workers are demonstrated here.
+      These rules do not implement Chicago Classification v4.0, interpret IRP/DCI in clinical units, or diagnose achalasia.
+      Use only synthetic data; do not enter patient information.
+    </aside>
+    <div class="layout">
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title">Example input</h2>
+        <form id="audit-form">
+          <div class="field"><label for="task_id">Synthetic task ID</label><input id="task_id" value="TASK-DEMO-001" maxlength="80" required></div>
+          <div class="field"><label for="target_id">Synthetic target ID</label><input id="target_id" value="SYNTH-001" maxlength="80" required></div>
+          <div class="field"><label for="primary_metric">Primary demo metric (no clinical units)</label><input type="number" id="primary_metric" value="29.4" step="any" required></div>
+          <div class="field"><label for="secondary_metric">Secondary demo metric (no clinical units)</label><input type="number" id="secondary_metric" value="14.8" step="any" required></div>
+          <div class="field"><label for="status_descriptor">Descriptor keyword</label><input id="status_descriptor" value="DISCORDANT_ANOMALY" maxlength="120" required></div>
+          <div class="inline"><input type="checkbox" id="is_critical"><label for="is_critical">Manual critical flag (demo only)</label></div>
+          <div class="actions"><button type="submit">Evaluate locally</button><button type="button" class="secondary" id="download" disabled>Export JSON</button></div>
+          <p id="error" role="alert" aria-live="polite"></p>
+        </form>
+      </section>
+      <section class="panel" aria-labelledby="results-title">
+        <h2 id="results-title">Rule evaluation</h2>
+        <p id="result-summary" role="status" aria-live="polite">No evaluation performed.</p>
+        <pre id="result" aria-label="JSON result">Submit the form to evaluate the three local rule checks.</pre>
+      </section>
+    </div>
+    <footer class="muted">
+      <p>All computation runs in this browser tab. No inputs are transmitted to a server or saved by the application. An exported JSON file is saved only if requested.</p>
+      <p>For the Python APIs and test suite, see the <a href="https://github.com/abusuraihsakhri/esophageal-motility-manometry-agent">source repository</a>.</p>
+    </footer>
+  </main>
+</body>
+</html>
