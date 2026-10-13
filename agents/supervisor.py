@@ -25,7 +25,20 @@ class SystemSupervisor:
         PHIGuard.assert_no_phi(payload.task_id)
         PHIGuard.assert_no_phi(payload.target_identifier)
         PHIGuard.assert_no_phi(payload.status_descriptor)
-        PHIGuard.assert_no_phi(payload.model_dump_json())
+        # Inspect textual metadata recursively, but not numeric measurements.
+        # Scanning serialized JSON caused long numeric values to resemble phone numbers.
+        def check_metadata(value):
+            if isinstance(value, str):
+                PHIGuard.assert_no_phi(value)
+            elif isinstance(value, dict):
+                for key, item in value.items():
+                    check_metadata(key)
+                    check_metadata(item)
+            elif isinstance(value, (list, tuple)):
+                for item in value:
+                    check_metadata(item)
+
+        check_metadata(payload.attributes)
 
         # Multi-worker evaluations
         all_alerts: List[AgentAlert] = []
