@@ -1,0 +1,49 @@
+name: Publish browser demonstration
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "index.html"
+      - "web/app.js"
+      - "web/index.html"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check browser script
+        run: |
+          node --check web/app.js
+          node web/test.js
+      - name: Assemble static artifact
+        run: |
+          mkdir -p _site/web
+          cp index.html _site/index.html
+          cp web/app.js _site/web/app.js
+          cp web/index.html _site/web/index.html
+          touch _site/.nojekyll
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
