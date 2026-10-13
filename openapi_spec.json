@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Esophageal Motility Manometry Engine API",
-    "description": "Enterprise Distributed Component Platform (Clinical & Cryptographic AI) adhering to CAP / CLSI / NIST Standards.",
+    "title": "Esophageal Motility Manometry Agent — Rule Demonstration API",
+    "description": "Generic rule evaluation; not Chicago Classification v4.0 or a clinical decision-support system.",
     "version": "3.0.0-ENTERPRISE",
     "contact": {
       "name": "Dr. Abu Suraih Sakhri",
@@ -15,24 +15,24 @@
         "summary": "Health and metadata check",
         "responses": {
           "200": {
-            "description": "System optimal"
+            "description": "Demo API is responding"
           }
         }
       }
     },
     "/metrics": {
       "get": {
-        "summary": "Prometheus operational metrics",
+        "summary": "Retrieve JSON counters",
         "responses": {
           "200": {
-            "description": "Prometheus text metrics"
+            "description": "In-memory JSON counts"
           }
         }
       }
     },
     "/api/audit": {
       "post": {
-        "summary": "Dispatch task payload across specialized workers",
+        "summary": "Evaluate three demonstration rules",
         "requestBody": {
           "content": {
             "application/json": {
@@ -69,14 +69,14 @@
         },
         "responses": {
           "200": {
-            "description": "Consensus dossier with HMAC signature"
+            "description": "Rule evaluation with in-memory HMAC audit hash"
           }
         }
       }
     },
     "/api/chat": {
       "post": {
-        "summary": "Air-gapped supervisory conversational assistant",
+        "summary": "Return deterministic mock response",
         "requestBody": {
           "content": {
             "application/json": {
@@ -103,7 +103,7 @@
     },
     "/api/audit/logs": {
       "get": {
-        "summary": "Retrieve and cryptographically verify HMAC audit trail",
+        "summary": "Retrieve in-memory audit trail (not authenticated; local use only)",
         "responses": {
           "200": {
             "description": "Cryptographic audit trail"
