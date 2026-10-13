@@ -1,5 +1,7 @@
 # Esophageal Motility Manometry Agent
 
+### [Open the Live Application →](https://abusuraihsakhri.github.io/esophageal-motility-manometry-agent/)
+
 A Python CLI and FastAPI service for evaluating **generic demonstration rules** over two numeric inputs, an optional critical flag, and a descriptor. A standalone browser demo shows the same three rule triggers without requiring a server.
 
 **Clinical limitation:** This repository is **not** a validated implementation of Chicago Classification v4.0 (CCv4.0). Its existing thresholds (primary metric >25, secondary metric >12) are illustrative, are not labeled with clinically meaningful units, and cannot classify achalasia, esophagogastric junction outflow obstruction, spasm, hypercontractile esophagus, or ineffective esophageal motility. Results must not be used for diagnosis, management, or patient triage.
